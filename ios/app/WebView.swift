@@ -13,7 +13,7 @@ struct Webview: UIViewControllerRepresentable {
     let prefs: WebConfig
     
     func makeUIViewController(context: Context) -> WebviewController {
-        let webviewController = WebviewController()
+        let webviewController = WebViewController()
         webviewController.prefs = self.prefs
         webviewController.loadContent()
         return webviewController
@@ -32,7 +32,7 @@ extension Calendar {
     }
 }
 
-class WebviewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
+class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     lazy var prefs: WebConfig = WebConfig()
     lazy var webview: WKWebView = WKWebView()
     lazy var progressbar: UIProgressView = UIProgressView()
