@@ -19,6 +19,8 @@
 		F7E6FFB7267C0706007123ED /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E6FFB5267C0706007123ED /* Config.swift */; };
 		F7E6FFC7267C081C007123ED /* build in Resources */ = {isa = PBXBuildFile; fileRef = F7E6FFC6267C081C007123ED /* build */; };
 		F7E6FFCA267C0821007123ED /* build in Resources */ = {isa = PBXBuildFile; fileRef = F7E6FFC6267C081C007123ED /* build */; };
+		F7E6FFCE267C0F49007123ED /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E6FFCD267C0F49007123ED /* Bundle.swift */; };
+		F7E6FFCF267C0F49007123ED /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E6FFCD267C0F49007123ED /* Bundle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,7 @@
 		F7E6FFB0267C06F4007123ED /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		F7E6FFB5267C0706007123ED /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		F7E6FFC6267C081C007123ED /* build */ = {isa = PBXFileReference; lastKnownFileType = folder; name = build; path = ../build; sourceTree = "<group>"; };
+		F7E6FFCD267C0F49007123ED /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +73,7 @@
 				F7E6FF87267C0660007123ED /* WebApp.swift */,
 				F7E6FF88267C0660007123ED /* WebPage.swift */,
 				F7E6FFB5267C0706007123ED /* Config.swift */,
+				F7E6FFCD267C0F49007123ED /* Bundle.swift */,
 				F7E6FFB0267C06F4007123ED /* WebView.swift */,
 				F7E6FF89267C0663007123ED /* Assets.xcassets */,
 			);
@@ -202,6 +206,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E6FFB1267C06F4007123ED /* WebView.swift in Sources */,
+				F7E6FFCE267C0F49007123ED /* Bundle.swift in Sources */,
 				F7E6FFB6267C0706007123ED /* Config.swift in Sources */,
 				F7E6FF9C267C0663007123ED /* WebPage.swift in Sources */,
 				F7E6FF9A267C0663007123ED /* WebApp.swift in Sources */,
@@ -213,6 +218,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E6FFB2267C06F4007123ED /* WebView.swift in Sources */,
+				F7E6FFCF267C0F49007123ED /* Bundle.swift in Sources */,
 				F7E6FFB7267C0706007123ED /* Config.swift in Sources */,
 				F7E6FF9D267C0663007123ED /* WebPage.swift in Sources */,
 				F7E6FF9B267C0663007123ED /* WebApp.swift in Sources */,

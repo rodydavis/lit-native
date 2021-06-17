@@ -6,3 +6,8 @@ Run your Lit PWA everywhere.
 
 - iOS
 - MacOS
+
+## Screenshots
+
+![](/screenshots/ios.png)
+![](/screenshots/macos.png)
