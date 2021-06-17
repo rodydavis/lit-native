@@ -32,6 +32,7 @@ export const multiFileConfig: UserConfigExport = {
     lib: {
       entry: "src/my-element.ts",
       formats: ["es"],
+      fileName: 'bundle'
     },
     rollupOptions: {
       input: {

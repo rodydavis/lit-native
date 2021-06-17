@@ -66,27 +66,27 @@ class WebviewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         switch keyPath {
-            case "estimatedProgress":
-                if self.webview.estimatedProgress >= 1.0 {
-                    UIView.animate(withDuration: 0.3, animations: { () in
-                        self.progressbar.alpha = 0.0
-                    }, completion: { finished in
-                        self.progressbar.setProgress(0.0, animated: false)
-                        self.prefs.title = self.webview.title ?? self.prefs.title
-                    })
-                } else {
-                    self.progressbar.isHidden = false
-                    self.progressbar.alpha = 1.0
-                    progressbar.setProgress(Float(self.webview.estimatedProgress), animated: true)
+        case "estimatedProgress":
+            if self.webview.estimatedProgress >= 1.0 {
+                UIView.animate(withDuration: 0.3, animations: { () in
+                    self.progressbar.alpha = 0.0
+                }, completion: { finished in
+                    self.progressbar.setProgress(0.0, animated: false)
+                    self.prefs.title = self.webview.title ?? self.prefs.title
+                })
+            } else {
+                self.progressbar.isHidden = false
+                self.progressbar.alpha = 1.0
+                progressbar.setProgress(Float(self.webview.estimatedProgress), animated: true)
+            }
+        case "title":
+            if let title = self.webview.title {
+                if self.prefs.title != title {
+                    self.prefs.title = title
                 }
-            case "title":
-                if let title = self.webview.title {
-                    if self.prefs.title != title {
-                        self.prefs.title = title
-                    }
-                }
-            default:
-                super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+            }
+        default:
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
     
@@ -169,6 +169,8 @@ class WebviewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     }
     
     func downloadBundle() {
+        if self.prefs.url.isEmpty { return }
+        
         if let url = URL(string: self.prefs.url + "/" + self.prefs.bundle) {
             let key = "last-bundle-update";
             
