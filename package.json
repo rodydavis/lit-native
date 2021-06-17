@@ -16,8 +16,7 @@
   },
   "dependencies": {
     "lit-element": "^2.4.0",
-    "vite-plugin-pwa": "^0.8.1",
-    "vite-plugin-singlefile": "^0.5.1"
+    "vite-plugin-pwa": "^0.8.1"
   },
   "devDependencies": {
     "@types/node": "^15.12.2",

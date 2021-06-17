@@ -53,25 +53,8 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate {
         })
     }
     
-    
-    func loadLocal(_ webview: WKWebView) {
-        let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "build")!
-        webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-        let bundle = AppBundle(prefs: self.prefs)
-        let script = WKUserScript(source: bundle.get(), injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        self.webview.configuration.userContentController.addUserScript(script)
-        webview.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-        bundle.download()
-    }
-    
-    func loadRemote(_ webview: WKWebView, url: URL) {
-        let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-        webview.load(request)
-    }
-    
     func loadContent() {
-        // self.loadRemote(webview, url: URL(string: self.config.url)!)
-        self.loadLocal(webview)
+        loadLocal(self.webview, prefs: self.prefs)
     }
 }
 
@@ -148,30 +131,48 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
-    
-    func loadLocal(_ webview: WKWebView) {
-        let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "build")!
-        webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-        let bundle = AppBundle(prefs: self.prefs)
-        let script = WKUserScript(source: bundle.get(), injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        self.webview.configuration.userContentController.addUserScript(script)
-        webview.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-        bundle.download()
-    }
-    
-    func loadRemote(_ webview: WKWebView, url: URL) {
-        let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-        webview.load(request)
-    }
-    
+
     func loadContent() {
-        // self.loadRemote(webview, url: URL(string: self.config.url)!)
-        self.loadLocal(webview)
+        loadLocal(webview, prefs: self.prefs)
     }
 }
 
 
 #endif
+
+func loadRemote(_ webview: WKWebView, url: URL) {
+    let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+    webview.load(request)
+}
+
+func loadLocal(_ webview: WKWebView, prefs: WebConfig) {
+    webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+    let bundle = AppBundle(prefs: prefs)
+    let script = WKUserScript(source: bundle.get(), injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+    webview.configuration.userContentController.addUserScript(script)
+//    let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "build")!
+//    webview.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+    webview.loadHTMLString(getHTML(tagname: "my-element", title: prefs.title), baseURL: URL(string: prefs.url))
+    
+}
+
+func getHTML(tagname: String, title: String = "", slot: String = "") -> String {
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>\(title)</title>
+      </head>
+      <body>
+        <\(tagname)>
+            \(slot)
+        </\(tagname)>
+      </body>
+    </html>
+    """
+}
 
 extension Calendar {
     public func daysSince(date: Date) -> Int? {

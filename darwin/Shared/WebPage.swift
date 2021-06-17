@@ -22,7 +22,8 @@ struct WebPage: View {
                }
         #elseif os(macOS)
         Webview(prefs: self.prefs)
-            .ignoresSafeArea(edges: .bottom).navigationTitle(self.prefs.title)
+            .ignoresSafeArea(edges: .bottom)
+            .navigationTitle(prefs.title)
         #endif
     }
 }
