@@ -45,10 +45,10 @@ export class MyElement extends LitElement {
   private _onClick() {
     this.count++;
     document.dispatchEvent(
-      new CustomEvent("native-alert", {
+      new CustomEvent("native", {
         bubbles: true,
         cancelable: true,
-        detail: { title: "Alert", message: "Hello from Web!" },
+        detail: { type: "dialog", title: "Alert", message: "Hello from Web!" },
       })
     );
   }
@@ -61,8 +61,9 @@ export class MyElement extends LitElement {
     this.addEventListener(
       "response",
       (e: any) => {
+        // const { title, detail } = e.detail;
         console.log("event", e);
-        this.name = "WebKit!";
+        this.name = "WebKit";
         this.requestUpdate();
       },
       false
