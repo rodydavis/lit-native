@@ -19,7 +19,9 @@ class Events {
             case "dialog":
                 let title = dict["title"] as! String
                 let message = dict["message"] as! String
-                showAlert(webview, title: title, message: message)
+                showAlert(title: title, message: message) {
+                    sendEvent(webview, event: "response", detail: "WebKit")
+                }
                 break
             default:
                 print("event", dict)
@@ -49,12 +51,12 @@ func sendEvent(_ webview: WKWebView, event: String, detail: String) -> Void {
     
 }
 
-func showAlert(_ webview: WKWebView, title: String, message: String) -> Void {
+func showAlert(title: String, message: String, callback: @escaping () -> Void) -> Void {
     let alert = UIAlertController(title:title,
                                   message: message,
                                   preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "Ok", style: .default){ action -> Void in
-        sendEvent(webview, event: "response", detail: "WebKit")
+        callback()
     })
     let vc = UIApplication.shared.windows.first?.rootViewController
     vc?.present(alert, animated: true, completion: nil)

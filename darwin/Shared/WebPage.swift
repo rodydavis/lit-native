@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct WebPage: View {
-    @StateObject var prefs = WebConfig()
+    @StateObject var state = AppState()
     
     var body: some View {
         #if os(iOS)
         NavigationView{
-                   Webview(prefs: prefs)
+                   Webview(state: state)
                        .ignoresSafeArea(edges: .bottom)
-                       .statusBar(hidden: prefs.hideStatusBar)
-                       .navigationBarTitle(prefs.title, displayMode: .inline)
-                       .navigationBarHidden(prefs.hideNavigationBar)
+                       .statusBar(hidden: state.hideStatusBar)
+                       .navigationBarTitle(state.title, displayMode: .inline)
+                       .navigationBarHidden(state.hideNavigationBar)
                    
                }
         #elseif os(macOS)
@@ -30,7 +30,7 @@ struct WebPage: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        WebPage(prefs: WebConfig())
+        WebPage(state: AppState())
             .previewDisplayName("Web App")
     }
 }

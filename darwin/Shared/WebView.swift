@@ -26,7 +26,7 @@ struct Webview: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        webviewController.loadContent()
+        webviewController.updateContent()
     }
 }
 
@@ -56,6 +56,10 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, W
         loadLocal(self.webview, prefs: self.prefs)
     }
     
+    func updateContent() {
+        
+    }
+    
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         prefs.events.handler(self.webview, message: message)
     }
@@ -64,23 +68,23 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, W
 #elseif os(iOS)
 
 struct Webview: UIViewControllerRepresentable {
-    let prefs: WebConfig
+    let state: AppState
     
     func makeUIViewController(context: Context) -> WebViewController {
         let webviewController = WebViewController()
-        webviewController.prefs = self.prefs
+        webviewController.state = state
         webviewController.loadContent()
         return webviewController
     }
     
     func updateUIViewController(_ webviewController: WebViewController, context: Context) {
-        webviewController.loadContent()
+        webviewController.updateContent()
     }
 }
 
 class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     
-    lazy var prefs: WebConfig = WebConfig()
+    lazy var state = AppState()
     lazy var webview: WKWebView = createWebView()
     
     override func viewDidLoad() {
@@ -96,8 +100,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
         switch keyPath {
         case "title":
             if let title = self.webview.title {
-                if self.prefs.title != title {
-                    self.prefs.title = title
+                if state.title != title {
+                    state.title = title
                 }
             }
         default:
@@ -106,11 +110,15 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
     }
 
     func loadContent() {
-        loadLocal(webview, prefs: self.prefs)
+        loadLocal(webview, state: state)
+    }
+    
+    func updateContent() {
+        
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        prefs.events.handler(self.webview, message: message)
+        state.events.handler(self.webview, message: message)
     }
 }
 
@@ -136,12 +144,12 @@ func loadRemote(_ webview: WKWebView, url: URL) {
     webview.load(request)
 }
 
-func loadLocal(_ webview: WKWebView, prefs: WebConfig) {
+func loadLocal(_ webview: WKWebView, state: AppState) {
     webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-    let bundle = AppBundle(prefs: prefs)
+    let bundle = AppBundle(state: state)
     addScript(webview, source: bundle.get())
-    addScript(webview, source: prefs.events.script())
-    webview.loadHTMLString(getHTML(tagname: "my-element", title: prefs.title), baseURL: URL(string: prefs.url))
+    addScript(webview, source: state.events.script())
+    webview.loadHTMLString(getHTML(tagname: "my-element", title: state.title), baseURL: URL(string: state.url))
 }
 
 func addScript(_ webview: WKWebView, source: String) {
