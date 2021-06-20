@@ -17,16 +17,16 @@ struct Webview: NSViewRepresentable {
     typealias NSViewType = WKWebView
     
     let prefs: WebConfig
-    let webviewController = WebViewController()
+    let vc = WebViewController()
     
     func makeNSView(context: Context) -> WKWebView {
-        webviewController.prefs = self.prefs
-        webviewController.loadContent()
-        return webviewController.webview
+        vc.prefs = prefs
+        vc.loadContent()
+        return vc.webview
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        webviewController.updateContent()
+        vc.updateContent()
     }
 }
 
@@ -69,16 +69,16 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, W
 
 struct Webview: UIViewControllerRepresentable {
     let state: AppState
+    let vc = WebViewController()
     
     func makeUIViewController(context: Context) -> WebViewController {
-        let webviewController = WebViewController()
-        webviewController.state = state
-        webviewController.loadContent()
-        return webviewController
+        vc.state = state
+        vc.loadContent()
+        return vc
     }
     
     func updateUIViewController(_ webviewController: WebViewController, context: Context) {
-        webviewController.updateContent()
+        vc.updateContent()
     }
 }
 
@@ -149,7 +149,7 @@ func loadLocal(_ webview: WKWebView, state: AppState) {
     let bundle = AppBundle(state: state)
     addScript(webview, source: bundle.get())
     addScript(webview, source: state.events.script())
-    webview.loadHTMLString(getHTML(tagname: "my-element", title: state.title), baseURL: URL(string: state.url))
+    webview.loadHTMLString(getHTML(tagname: state.component, title: state.title), baseURL: URL(string: state.url))
 }
 
 func addScript(_ webview: WKWebView, source: String) {

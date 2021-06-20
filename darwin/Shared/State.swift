@@ -15,5 +15,6 @@ class AppState: ObservableObject {
     @Published var hideStatusBar = false
     @Published var hideNavigationBar = false
     @Published var cacheDays = 1
+    @Published var component = "my-element"
     let events = Events()
 }

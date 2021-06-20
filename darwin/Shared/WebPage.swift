@@ -11,9 +11,10 @@ struct WebPage: View {
     @StateObject var state = AppState()
     
     var body: some View {
+        let webview = Webview(state: state)
         #if os(iOS)
         NavigationView{
-                   Webview(state: state)
+            webview
                        .ignoresSafeArea(edges: .bottom)
                        .statusBar(hidden: state.hideStatusBar)
                        .navigationBarTitle(state.title, displayMode: .inline)
@@ -21,7 +22,7 @@ struct WebPage: View {
                    
                }
         #elseif os(macOS)
-        Webview(prefs: self.prefs)
+        webview
             .ignoresSafeArea(edges: .bottom)
             .navigationTitle(prefs.title)
         #endif
