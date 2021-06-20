@@ -44,10 +44,29 @@ export class MyElement extends LitElement {
 
   private _onClick() {
     this.count++;
+    document.dispatchEvent(
+      new CustomEvent("native-alert", {
+        bubbles: true,
+        cancelable: true,
+        detail: { title: "Alert", message: "Hello from Web!" },
+      })
+    );
   }
 
   foo(): string {
     return "foo";
+  }
+
+  async firstUpdated() {
+    this.addEventListener(
+      "response",
+      (e: any) => {
+        console.log("event", e);
+        this.name = "WebKit!";
+        this.requestUpdate();
+      },
+      false
+    );
   }
 }
 

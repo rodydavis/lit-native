@@ -30,8 +30,8 @@ struct Webview: NSViewRepresentable {
     }
 }
 
-class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate {
-    lazy var prefs: WebConfig = WebConfig()
+class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
+    lazy var prefs: WebConfig = createWebView()
     lazy var webview: WKWebView = WKWebView()
     var urlObservation: NSKeyValueObservation?
     var titleObservation: NSKeyValueObservation?
@@ -39,10 +39,8 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.webview.frame = self.view.frame
-        self.webview.configuration.mediaTypesRequiringUserActionForPlayback = []
         self.webview.navigationDelegate = self
         self.webview.uiDelegate = self
-        self.webview.isHidden = false
         self.view.addSubview(self.webview)
         titleObservation = self.webview.observe(\.title, changeHandler: { (webView, change) in
             if let title = self.webview.title {
@@ -51,10 +49,15 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate {
                 }
             }
         })
+        self.webview.configuration.userContentController.add(self, name: "handler")
     }
     
     func loadContent() {
         loadLocal(self.webview, prefs: self.prefs)
+    }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        prefs.events.handler(self.webview, message: message)
     }
 }
 
@@ -75,52 +78,22 @@ struct Webview: UIViewControllerRepresentable {
     }
 }
 
-class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
+class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
+    
     lazy var prefs: WebConfig = WebConfig()
-    lazy var webview: WKWebView = WKWebView()
-    lazy var progressbar: UIProgressView = UIProgressView()
+    lazy var webview: WKWebView = createWebView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.webview.frame = self.view.frame
-        self.webview.configuration.allowsInlineMediaPlayback = false
-        self.webview.configuration.mediaTypesRequiringUserActionForPlayback = []
         self.webview.navigationDelegate = self
         self.webview.uiDelegate = self
-        self.webview.scrollView.bounces = false
-        self.webview.scrollView.isScrollEnabled = false
-        self.webview.isOpaque = false
-        self.webview.isHidden = false
         self.view.addSubview(self.webview)
-        
-        self.view.addSubview(self.progressbar)
-        self.progressbar.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addConstraints([
-            self.progressbar.topAnchor.constraint(equalTo: self.view.topAnchor),
-            self.progressbar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            self.progressbar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-        ])
-        
-        self.progressbar.progress = 0.1
-        webview.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
+        self.webview.configuration.userContentController.add(self, name: "handler")
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         switch keyPath {
-        case "estimatedProgress":
-            if self.webview.estimatedProgress >= 1.0 {
-                UIView.animate(withDuration: 0.3, animations: { () in
-                    self.progressbar.alpha = 0.0
-                }, completion: { finished in
-                    self.progressbar.setProgress(0.0, animated: false)
-                    self.prefs.title = self.webview.title ?? self.prefs.title
-                })
-            } else {
-                self.progressbar.isHidden = false
-                self.progressbar.alpha = 1.0
-                progressbar.setProgress(Float(self.webview.estimatedProgress), animated: true)
-            }
         case "title":
             if let title = self.webview.title {
                 if self.prefs.title != title {
@@ -135,10 +108,28 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     func loadContent() {
         loadLocal(webview, prefs: self.prefs)
     }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        prefs.events.handler(self.webview, message: message)
+    }
 }
 
 
 #endif
+
+func createWebView() -> WKWebView {
+    let webview = WKWebView()
+    webview.translatesAutoresizingMaskIntoConstraints = false
+    webview.configuration.allowsInlineMediaPlayback = false
+    webview.configuration.mediaTypesRequiringUserActionForPlayback = []
+    webview.scrollView.bounces = false
+    webview.scrollView.isScrollEnabled = false
+    webview.isOpaque = false
+    webview.isHidden = false
+   return webview
+}
+
+
 
 func loadRemote(_ webview: WKWebView, url: URL) {
     let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
@@ -148,12 +139,14 @@ func loadRemote(_ webview: WKWebView, url: URL) {
 func loadLocal(_ webview: WKWebView, prefs: WebConfig) {
     webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
     let bundle = AppBundle(prefs: prefs)
-    let script = WKUserScript(source: bundle.get(), injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-    webview.configuration.userContentController.addUserScript(script)
-//    let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "build")!
-//    webview.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+    addScript(webview, source: bundle.get())
+    addScript(webview, source: prefs.events.script())
     webview.loadHTMLString(getHTML(tagname: "my-element", title: prefs.title), baseURL: URL(string: prefs.url))
-    
+}
+
+func addScript(_ webview: WKWebView, source: String) {
+    let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+    webview.configuration.userContentController.addUserScript(script)
 }
 
 func getHTML(tagname: String, title: String = "", slot: String = "") -> String {

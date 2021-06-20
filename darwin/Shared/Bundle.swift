@@ -19,6 +19,8 @@ class AppBundle {
         // Start remote download
         self.download()
         
+        #if DEBUG
+        #else
         // Search for cached bundle
         do {
             let url = self.appSup.appendingPathComponent(self.prefs.bundle).appendingPathExtension("js")
@@ -27,6 +29,7 @@ class AppBundle {
         } catch {
             print("Cached bundle not found", error)
         }
+        #endif
         
         // Fallback to included bundle
         do {
@@ -44,6 +47,7 @@ class AppBundle {
 
     func save(content: String) {
         let fileManager = FileManager.default
+        
         let bundleUrl = self.appSup.appendingPathComponent(self.prefs.bundle).appendingPathExtension("js")
         
         // Check if Application Support Exists
@@ -70,7 +74,7 @@ class AppBundle {
         
         // Update the bundle
         do {
-            try content.write(to: self.appSup, atomically: true, encoding: String.Encoding.utf8)
+            try content.write(to: bundleUrl, atomically: true, encoding: String.Encoding.utf8)
         } catch {
             print("Error updating bundle", error)
         }
