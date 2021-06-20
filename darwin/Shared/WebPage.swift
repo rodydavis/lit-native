@@ -9,18 +9,16 @@ import SwiftUI
 
 struct WebPage: View {
     @StateObject var state = AppState()
+    @State private var selection: String? = nil
     
     var body: some View {
         let webview = Webview(state: state)
         #if os(iOS)
-        NavigationView{
-            webview
-                       .ignoresSafeArea(edges: .bottom)
-                       .statusBar(hidden: state.hideStatusBar)
-                       .navigationBarTitle(state.title, displayMode: .inline)
-                       .navigationBarHidden(state.hideNavigationBar)
-                   
-               }
+        webview
+                   .ignoresSafeArea(edges: .bottom)
+                   .statusBar(hidden: state.hideStatusBar)
+                   .navigationBarTitle(state.title, displayMode: .inline)
+                   .navigationBarHidden(state.hideNavigationBar)
         #elseif os(macOS)
         webview
             .ignoresSafeArea(edges: .bottom)
