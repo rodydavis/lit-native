@@ -16,11 +16,11 @@ import Cocoa
 struct Webview: NSViewRepresentable {
     typealias NSViewType = WKWebView
     
-    let prefs: WebConfig
+    let state: AppState
     let vc = WebViewController()
     
     func makeNSView(context: Context) -> WKWebView {
-        vc.prefs = prefs
+        vc.state = state
         vc.loadContent()
         return vc.webview
     }
@@ -31,29 +31,20 @@ struct Webview: NSViewRepresentable {
 }
 
 class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
-    lazy var prefs: WebConfig = createWebView()
-    lazy var webview: WKWebView = WKWebView()
-    var urlObservation: NSKeyValueObservation?
-    var titleObservation: NSKeyValueObservation?
+    lazy var state: AppState = AppState()
+    lazy var webview: WKWebView = createWebView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.webview.frame = self.view.frame
-        self.webview.navigationDelegate = self
-        self.webview.uiDelegate = self
-        self.view.addSubview(self.webview)
-        titleObservation = self.webview.observe(\.title, changeHandler: { (webView, change) in
-            if let title = self.webview.title {
-                if self.prefs.title != title {
-                    self.prefs.title = title
-                }
-            }
-        })
-        self.webview.configuration.userContentController.add(self, name: "handler")
+        webview.frame = self.view.frame
+        webview.navigationDelegate = self
+        webview.uiDelegate = self
+        view.addSubview(webview)
+        webview.configuration.userContentController.add(self, name: "handler")
     }
     
     func loadContent() {
-        loadLocal(self.webview, prefs: self.prefs)
+        loadLocal(webview, state: state)
     }
     
     func updateContent() {
@@ -61,7 +52,7 @@ class WebViewController: NSViewController, WKNavigationDelegate, WKUIDelegate, W
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        prefs.events.handler(self.webview, message: message)
+        state.events.handler(webview, message: message)
     }
 }
 
@@ -83,27 +74,20 @@ struct Webview: UIViewControllerRepresentable {
 }
 
 class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
-    
     lazy var state = AppState()
     lazy var webview: WKWebView = createWebView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.webview.frame = self.view.frame
-        self.webview.navigationDelegate = self
-        self.webview.uiDelegate = self
-        self.view.addSubview(self.webview)
-        self.webview.configuration.userContentController.add(self, name: "handler")
+        webview.frame = view.frame
+        webview.navigationDelegate = self
+        webview.uiDelegate = self
+        view.addSubview(webview)
+        webview.configuration.userContentController.add(self, name: "handler")
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         switch keyPath {
-        case "title":
-            if let title = self.webview.title {
-                if state.title != title {
-                    state.title = title
-                }
-            }
         default:
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
@@ -118,7 +102,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        state.events.handler(self.webview, message: message)
+        state.events.handler(webview, message: message)
     }
 }
 
@@ -128,16 +112,16 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 func createWebView() -> WKWebView {
     let webview = WKWebView()
     webview.translatesAutoresizingMaskIntoConstraints = false
-    webview.configuration.allowsInlineMediaPlayback = false
     webview.configuration.mediaTypesRequiringUserActionForPlayback = []
+    webview.isHidden = false
+    #if os(iOS)
+    webview.configuration.allowsInlineMediaPlayback = false
     webview.scrollView.bounces = false
     webview.scrollView.isScrollEnabled = false
     webview.isOpaque = false
-    webview.isHidden = false
+    #endif
    return webview
 }
-
-
 
 func loadRemote(_ webview: WKWebView, url: URL) {
     let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
@@ -153,7 +137,7 @@ func loadLocal(_ webview: WKWebView, state: AppState) {
 }
 
 func addScript(_ webview: WKWebView, source: String) {
-    let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+    let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
     webview.configuration.userContentController.addUserScript(script)
 }
 

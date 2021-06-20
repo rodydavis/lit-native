@@ -52,6 +52,7 @@ func sendEvent(_ webview: WKWebView, event: String, detail: String) -> Void {
 }
 
 func showAlert(title: String, message: String, callback: @escaping () -> Void) -> Void {
+    #if os(iOS)
     let alert = UIAlertController(title:title,
                                   message: message,
                                   preferredStyle: .alert)
@@ -60,4 +61,22 @@ func showAlert(title: String, message: String, callback: @escaping () -> Void) -
     })
     let vc = UIApplication.shared.windows.first?.rootViewController
     vc?.present(alert, animated: true, completion: nil)
+    #elseif os(macOS)
+    let a = NSAlert()
+    a.messageText = title
+    a.informativeText = message
+    a.addButton(withTitle: "Ok")
+    a.alertStyle = .informational
+    var w: NSWindow?
+    if let window = NSApplication.shared.windows.first{
+        w = window
+    }
+    if let window = w{
+        a.beginSheetModal(for: window){ (modalResponse) in
+            if modalResponse == .alertFirstButtonReturn {
+                callback()
+            }
+        }
+    }
+    #endif
 }

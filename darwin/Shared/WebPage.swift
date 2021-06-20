@@ -24,7 +24,7 @@ struct WebPage: View {
         #elseif os(macOS)
         webview
             .ignoresSafeArea(edges: .bottom)
-            .navigationTitle(prefs.title)
+            .navigationTitle(state.title)
         #endif
     }
 }
