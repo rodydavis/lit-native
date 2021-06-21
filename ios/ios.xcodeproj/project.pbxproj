@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F7BF721F267F0F0A00CE9E58 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF721E267F0F0A00CE9E58 /* App.swift */; };
-		F7BF7221267F0F0A00CE9E58 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF7220267F0F0A00CE9E58 /* Component.swift */; };
+		F7BF7221267F0F0A00CE9E58 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF7220267F0F0A00CE9E58 /* Screen.swift */; };
 		F7BF7223267F0F0C00CE9E58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7BF7222267F0F0C00CE9E58 /* Assets.xcassets */; };
 		F7BF7226267F0F0C00CE9E58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7BF7225267F0F0C00CE9E58 /* Preview Assets.xcassets */; };
 		F7BF7237267F243D00CE9E58 /* build in Resources */ = {isa = PBXBuildFile; fileRef = F7BF7236267F243D00CE9E58 /* build */; };
@@ -21,7 +21,7 @@
 /* Begin PBXFileReference section */
 		F7BF721B267F0F0A00CE9E58 /* ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7BF721E267F0F0A00CE9E58 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
-		F7BF7220267F0F0A00CE9E58 /* Component.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
+		F7BF7220267F0F0A00CE9E58 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		F7BF7222267F0F0C00CE9E58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7BF7225267F0F0C00CE9E58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F7BF7227267F0F0C00CE9E58 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 				F7BF7239267F247500CE9E58 /* Bundle.swift */,
 				F7BF723C267F248200CE9E58 /* Events.swift */,
 				F7BF7242267F24A500CE9E58 /* WebView.swift */,
-				F7BF7220267F0F0A00CE9E58 /* Component.swift */,
+				F7BF7220267F0F0A00CE9E58 /* Screen.swift */,
 				F7BF723F267F248E00CE9E58 /* State.swift */,
 				F7BF7222267F0F0C00CE9E58 /* Assets.xcassets */,
 				F7BF7227267F0F0C00CE9E58 /* Info.plist */,
@@ -157,7 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7BF723D267F248200CE9E58 /* Events.swift in Sources */,
-				F7BF7221267F0F0A00CE9E58 /* Component.swift in Sources */,
+				F7BF7221267F0F0A00CE9E58 /* Screen.swift in Sources */,
 				F7BF723A267F247500CE9E58 /* Bundle.swift in Sources */,
 				F7BF7243267F24A500CE9E58 /* WebView.swift in Sources */,
 				F7BF7240267F248E00CE9E58 /* State.swift in Sources */,

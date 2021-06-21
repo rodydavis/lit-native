@@ -19,6 +19,14 @@ export class MyElement extends LitElement {
     button {
       touch-action: manipulation;
     }
+
+    @media (prefers-color-scheme: dark) {
+      main {
+        /* background-color: black; */
+        color: white;
+        border-color: white;
+      }
+    }
   `;
 
   /**

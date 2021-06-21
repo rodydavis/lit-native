@@ -14,40 +14,38 @@ struct Screen: View {
     let components: [Component]
     
     var body: some View {
-//        NavigationView {
-//            List(components) { item in
-//                NavigationLink(destination: item) {
-//                    Text(item.name)
-//                }
-//            }.navigationTitle(title)
-//        }
-        let child = components[0]
-        GeometryReader { geometry in
-            ZStack {
-                WebView(
-                    state: state,
-                    tag: child.tag,
-                    size: geometry.size
-                )
+        NavigationView {
+            List(components) { item in
+                NavigationLink(destination: GeometryReader { geometry in
+                            ZStack {
+                                WebView(
+                                    tag: item.tag,
+                                    size: geometry.size
+                                )
+                            }}.navigationBarTitle( item.name, displayMode: .automatic)
+                ) {
+                    Text(item.name)
+                }
+            }.navigationTitle(title)
+        }
+
 //                .ignoresSafeArea(edges: .bottom)
 //                    .statusBar(hidden: state.hideStatusBar)
 //                .navigationBarTitle( components[0].name, displayMode: .inline)
 //                    .navigationBarHidden(state.hideNavigationBar)
-            }
-        }
+//            }
+//        }
        
     }
 }
 
 
-struct Component:  Identifiable {
-    let id = UUID()
+struct Component: Codable, Identifiable {
+    var id = UUID()
     let tag: String
     let name: String
-    let icon: String = "phone.fill"
-    let bundle: String
-    let state = AppState()
-   
+    var icon: String = "phone.fill"
+    var bundle: String = "bundle.es"
 }
 
 //struct Component_Previews: PreviewProvider {
