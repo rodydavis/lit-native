@@ -9,14 +9,23 @@ import { LitElement, html, customElement, property, css } from "lit-element";
 @customElement("my-element")
 export class MyElement extends LitElement {
   static styles = css`
-    :host {
+    main {
       display: block;
       border: solid 1px gray;
+      margin: 10px;
       padding: 16px;
       max-width: 800px;
     }
     button {
       touch-action: manipulation;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      main {
+        /* background-color: black; */
+        color: white;
+        border-color: white;
+      }
     }
   `;
 
@@ -34,11 +43,13 @@ export class MyElement extends LitElement {
 
   render() {
     return html`
-      <h1>Hello, ${this.name}!</h1>
-      <button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>
-      <slot></slot>
+      <main>
+        <h1>Hello, ${this.name}!</h1>
+        <button @click=${this._onClick} part="button">
+          Click Count: ${this.count}
+        </button>
+        <slot></slot>
+      </main>
     `;
   }
 
@@ -53,10 +64,6 @@ export class MyElement extends LitElement {
     );
   }
 
-  foo(): string {
-    return "foo";
-  }
-
   async firstUpdated() {
     this.addEventListener(
       "response",
@@ -64,6 +71,14 @@ export class MyElement extends LitElement {
         // const { title, detail } = e.detail;
         console.log("event", e);
         this.name = "WebKit";
+        this.requestUpdate();
+      },
+      false
+    );
+    window.addEventListener(
+      "resize",
+      () => {
+        this.name = `${window.innerWidth}x${window.innerHeight}`;
         this.requestUpdate();
       },
       false

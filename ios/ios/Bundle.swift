@@ -7,13 +7,12 @@
 
 import Foundation
 
-class AppBundle {
-    lazy var state = AppState()
-    let appSup = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+struct AppBundle {
+    let name: String
+    let url: String
+    var cacheDays = 1
     
-    init(state: AppState) {
-        self.state = state
-    }
+    let appSup = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
    
     func get() -> String {
         // Start remote download
@@ -33,7 +32,7 @@ class AppBundle {
         
         // Fallback to included bundle
         do {
-            let url = Bundle.main.url(forResource: state.bundle, withExtension: "js", subdirectory: "build")!
+            let url = Bundle.main.url(forResource: name, withExtension: "js", subdirectory: "build")!
             let bundle: String = try String(contentsOfFile: url.path)
             self.save(content: bundle)
             return bundle
@@ -48,7 +47,7 @@ class AppBundle {
     func save(content: String) {
         let fileManager = FileManager.default
         
-        let bundleUrl = self.appSup.appendingPathComponent(state.bundle).appendingPathExtension("js")
+        let bundleUrl = self.appSup.appendingPathComponent(name).appendingPathExtension("js")
         
         // Check if Application Support Exists
         if !fileManager.fileExists(atPath: self.appSup.path) {
@@ -81,14 +80,14 @@ class AppBundle {
     }
 
     func download() {
-        if state.url.isEmpty { return }
+        if url.isEmpty { return }
         
-        if let url = URL(string: state.url + "/" + state.bundle) {
+        if let url = URL(string: url + "/" + name) {
             let key = "last-bundle-update";
             
             // Check if the bundle has already been downloaded
             if let value = UserDefaults.standard.object(forKey: key) as? Date {
-                if Calendar.current.daysSince(date: value) ?? -1 < state.cacheDays {
+                if Calendar.current.daysSince(date: value) ?? -1 < cacheDays {
                     return
                 }
             }
@@ -109,4 +108,10 @@ class AppBundle {
         }
     }
 
+}
+
+extension Calendar {
+    public func daysSince(date: Date) -> Int? {
+        return self.dateComponents([.day], from: date, to: Date()).day
+    }
 }

@@ -9,33 +9,56 @@ import Foundation
 import SwiftUI
 import WebKit
 
-struct Webview: UIViewControllerRepresentable {
-    let state: AppState
+struct WebView: UIViewControllerRepresentable {
     let tag: String
-    let vc = WebViewController()
+    let size: CGSize
+    var title: String = ""
+    var bundle: String = "bundle.es"
+    var url: String = ""
+  
+    let webview: WKWebView = WKWebView()
     
     func makeUIViewController(context: Context) -> WebViewController {
-        vc.state = state
-        vc.loadContent(tag: tag)
+        let vc = WebViewController()
+        vc.setBundle(bundle: AppBundle(name: bundle, url: url))
+        vc.context = self
         return vc
     }
     
     func updateUIViewController(_ webviewController: WebViewController, context: Context) {
-        vc.updateContent()
+        webviewController.resize(size: size)
     }
 }
 
 class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, UIWindowSceneDelegate {
-    lazy var state = AppState()
-    lazy var webview: WKWebView = createWebView()
+    lazy var context: WebView? = nil
+    lazy var bundle: AppBundle? = nil
+    let config = WKWebViewConfiguration()
+    lazy var webview: WKWebView = WKWebView()
+    
+    func resize(size: CGSize) {
+        webview.frame = CGRect(x: 0 , y: 0, width: size.width, height: size.height)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        webview.frame = view.frame
+        webview = WKWebView(frame: .zero, configuration: config)
+        webview.invalidateIntrinsicContentSize()
+        webview.translatesAutoresizingMaskIntoConstraints = true
+        webview.autoresizesSubviews = true
+        webview.contentMode = .redraw
+        webview.configuration.mediaTypesRequiringUserActionForPlayback = []
+        webview.isHidden = false
+        webview.configuration.allowsInlineMediaPlayback = false
+        webview.scrollView.bounces = false
+        webview.scrollView.isScrollEnabled = false
+        webview.isOpaque = false
         webview.navigationDelegate = self
         webview.uiDelegate = self
-        view.addSubview(webview)
+        webview.frame = view.frame
         webview.configuration.userContentController.add(self, name: "handler")
+        loadHtml()
+        view.addSubview(webview)
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -45,73 +68,73 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
         }
     }
     
-    
-   
-    func loadContent(tag: String) {
-        loadLocal(webview, state: state, tag: tag)
-    }
-    
-    func updateContent() {
-        webview.frame = self.view.frame
-    }
-    
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        state.events.handler(webview, message: message)
+        handleEvent(webview, message: message)
     }
-}
-
-func createWebView() -> WKWebView {
-    let webview = WKWebView()
-    webview.translatesAutoresizingMaskIntoConstraints = false
-    webview.configuration.mediaTypesRequiringUserActionForPlayback = []
-    webview.isHidden = false
-    #if os(iOS)
-    webview.configuration.allowsInlineMediaPlayback = false
-    webview.scrollView.bounces = false
-    webview.scrollView.isScrollEnabled = false
-    webview.isOpaque = false
-    #endif
-   return webview
-}
-
-func loadRemote(_ webview: WKWebView, url: URL) {
-    let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
-    webview.load(request)
-}
-
-func loadLocal(_ webview: WKWebView, state: AppState, tag: String) {
-    webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-    let bundle = AppBundle(state: state)
-    addScript(webview, source: bundle.get())
-    addScript(webview, source: state.events.script())
-    webview.loadHTMLString(getHTML(tagname: tag, title: state.title), baseURL: URL(string: state.url))
-}
-
-func addScript(_ webview: WKWebView, source: String) {
-    let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
-    webview.configuration.userContentController.addUserScript(script)
-}
-
-func getHTML(tagname: String, title: String = "", slot: String = "") -> String {
-    return """
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>\(title)</title>
-      </head>
-      <body>
-        <\(tagname)>
-            \(slot)
-        </\(tagname)>
-      </body>
-    </html>
-    """
-}
-
-extension Calendar {
-    public func daysSince(date: Date) -> Int? {
-        return self.dateComponents([.day], from: date, to: Date()).day
+    
+    func loadHtml() {
+        webview.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+        addScript(source: bundle!.get())
+        addScript(source: eventScript())
+        webview.loadHTMLString(getHTML(title: context!.title), baseURL: nil)
     }
+
+    func addScript(source: String) {
+        let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        webview.configuration.userContentController.addUserScript(script)
+    }
+    
+    func setBundle(bundle: AppBundle) {
+        self.bundle = bundle
+    }
+    
+    func getHTML(title: String = "", slot: String = "") -> String {
+        return """
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+            <title>\(title)</title>
+            <style>
+                body {
+                    width: 100%;
+                    height: 100vh;
+                    padding: 0;
+                    margin: 0;
+                }
+            </style>
+          </head>
+          <body>
+            <\(context!.tag)>
+                \(slot)
+            </\(context!.tag)>
+          </body>
+        </html>
+        """
+    }
+    
+    func eventScript() -> String {
+        return """
+        document.addEventListener('native', (e) => {
+            window.webkit.messageHandlers.handler.postMessage(e.detail);
+        }, false);
+        """
+    }
+
+}
+
+extension WKWebView {
+    public func dispatchEvent(event: String, detail: String) -> Void {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        let data = try! encoder.encode(["event": event, "detail": detail])
+        let jsonString = String(data: data, encoding: .utf8)!
+        let script = """
+        const elem = document.querySelector('my-element')
+        elem.dispatchEvent(new CustomEvent('response', { detail: \(jsonString) }))
+        """
+        self.evaluateJavaScript(script)
+    }
+
 }

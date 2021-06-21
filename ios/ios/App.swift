@@ -16,18 +16,15 @@ struct MyApp: App {
                components: [
                 Component(
                     tag:  "my-element",
-                    name: "Element 1",
-                    bundle: "bundle.es"
+                    name: "Element 1"
                 ),
                 Component(
                     tag:  "my-element",
-                    name: "Element 2",
-                    bundle: "bundle.es"
+                    name: "Element 2"
                 ),
                 Component(
                     tag:  "my-element",
-                    name: "Element 3",
-                    bundle: "bundle.es"
+                    name: "Element 3"
                 )
                ]
            )
