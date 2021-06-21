@@ -1,6 +1,6 @@
 # Lit Native
 
-Run your Lit PWA everywhere.
+Run your Lit components everywhere.
 
 - 2 way communication
 - no node js or JavaScript runtime
@@ -8,6 +8,11 @@ Run your Lit PWA everywhere.
 - native code via events
 - resize / dark mode support
 - no dependencies
+- typescript
+- lit
+- WIP native navigation
+- menus where supported
+- Swift 5
 
 ## Supported Platforms
 
