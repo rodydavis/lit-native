@@ -1,0 +1,20 @@
+{
+    "name": "My App",
+    "bundle": "bundle.es",
+    "navigation": {
+        "title": "My Element",
+        "tabs": [
+            {
+                "title": "My Element",
+                "component": "my-element",
+                "ios_icon": "phone.fill"
+            },
+            {
+                "title": "My Element",
+                "component": "my-element",
+                "ios_icon": "phone.fill"
+            }
+        ]
+    },
+    "menu": {}
+}
