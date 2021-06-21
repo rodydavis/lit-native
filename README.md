@@ -2,6 +2,13 @@
 
 Run your Lit PWA everywhere.
 
+- 2 way communication
+- no node js or JavaScript runtime
+- native web views
+- native code via events
+- resize / dark mode support
+- no dependencies
+
 ## Supported Platforms
 
 - iOS
@@ -11,7 +18,7 @@ Run your Lit PWA everywhere.
 
 1. `npm run install`
 2. `npm run build`
-3. Open target folder (i.e. darwin)
+3. Open target folder (i.e. darwin, ios)
 4. Run project
 
 ## Screenshots
