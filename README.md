@@ -23,7 +23,7 @@ Run your Lit components everywhere.
 
 1. `npm run install`
 2. `npm run build`
-3. Open target folder (i.e. darwin, ios)
+3. Open target folder (i.e. ios)
 4. Run project
 
 ## Screenshots
