@@ -14,31 +14,42 @@ struct Screen: View {
     let components: [Component]
     
     var body: some View {
-        NavigationView {
-            List(components) { item in
-                NavigationLink(destination: GeometryReader { geometry in
-                            ZStack {
-                                WebView(
-                                    tag: item.tag,
-                                    size: geometry.size
-                                )
-                            }}.navigationBarTitle( item.name, displayMode: .automatic)
-                ) {
-                    Text(item.name)
-                }
-            }.navigationTitle(title)
+        if (components.count == 1 && title.count > 0) {
+            let item = components[0]
+            if (horizontalSizeClass == .compact) {
+                NavigationView {
+                    RenderComponent(component: item)
+                }.navigationTitle(title)
+            } else {
+                RenderComponent(component: item)
+            }
+        } else {
+            NavigationView {
+                List(components) { item in
+                    NavigationLink(destination: RenderComponent(component: item)
+                    ) {
+                        Text(item.name)
+                    }
+                }.navigationTitle(title)
+            }
         }
-
-//                .ignoresSafeArea(edges: .bottom)
-//                    .statusBar(hidden: state.hideStatusBar)
-//                .navigationBarTitle( components[0].name, displayMode: .inline)
-//                    .navigationBarHidden(state.hideNavigationBar)
-//            }
-//        }
-       
     }
 }
 
+struct RenderComponent: View {
+    let component: Component
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                WebView(
+                    tag: component.tag,
+                    size: geometry.size
+                )
+            }}
+            .navigationBarTitle( component.name, displayMode: .automatic)
+    }
+}
 
 struct Component: Codable, Identifiable {
     var id = UUID()
@@ -47,9 +58,3 @@ struct Component: Codable, Identifiable {
     var icon: String = "phone.fill"
     var bundle: String = "bundle.es"
 }
-
-//struct Component_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Component(component: "my-element")
-//    }
-//}

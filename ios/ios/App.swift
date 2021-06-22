@@ -18,22 +18,14 @@ struct MyApp: App {
                     tag:  "my-element",
                     name: "Element 1"
                 ),
-                Component(
-                    tag:  "my-element",
-                    name: "Element 2"
-                ),
-                Component(
-                    tag:  "my-element",
-                    name: "Element 3"
-                )
                ]
            )
         }.commands {
-            CommandMenu("Custom Menu") {
-                Button("Action 1") {
-                    print("pressed menu item")
-                }
-            }
+//            CommandMenu("Custom Menu") {
+//                Button("Action 1") {
+//                    print("pressed menu item")
+//                }
+//            }
         }
     }
 }
