@@ -1,9 +1,9 @@
-import { defineConfig, UserConfigExport } from "vite";
+import { defineConfig } from "vite";
 import { resolve } from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  // base: "build",
+  base: "/lit-native/",
   plugins: [VitePWA()],
   build: {
     outDir: "build",
