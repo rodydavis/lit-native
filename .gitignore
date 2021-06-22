@@ -4,3 +4,4 @@ dist
 build
 types
 *.local
+android/.idea

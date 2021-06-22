@@ -17,9 +17,3 @@ buildscript {
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
-
-tasks.register<Copy>("copyBuild") {
-    val file = File("../build")
-    from(file)
-    into("$projectDir/app/src/main/res/build")
-}

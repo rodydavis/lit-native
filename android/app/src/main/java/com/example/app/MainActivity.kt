@@ -21,10 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Screen("Android")
-                }
+                Screen("Android")
             }
         }
     }
@@ -43,8 +40,34 @@ fun Screen(title: String) {
                 webViewClient = WebViewClient()
                 settings.allowContentAccess = true
                 settings.allowFileAccess = true
-
-                loadUrl("https://google.com")
+                val tag = "my-element"
+                val slot = ""
+                val script = "build/bundle.es.js"
+                loadData("""
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+                <title>${title}</title>
+                <style>
+                    body {
+                        width: 100%;
+                        height: 100vh;
+                        padding: 0;
+                        margin: 0;
+                    }
+                </style>
+              </head>
+              <body>
+                <${tag}>
+                    $slot
+                </${tag}>
+                <script src="file://android_asset/${script}"></script>
+              </body>
+            </html>
+                """.trimIndent(), "text/html", "UTF-8")
+//                loadUrl("https://google.com")
             }
         },
         update = {
