@@ -2,11 +2,14 @@
 
 Reuse lit web components on native platforms.
 
+[Online Demo](https://rodydavis.github.io/lit-native/)
+
 ## Supported Platforms
 
 - iOS
 - MacOS
 - Android
+- Web
 
 ## Getting Started
 
