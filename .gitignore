@@ -4,3 +4,5 @@ dist
 build
 types
 *.local
+android/.idea
+android/.gradle
