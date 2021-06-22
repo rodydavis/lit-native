@@ -1,20 +1,19 @@
-package com.example.app
+package com.example.webapp
 
 import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.app.ui.theme.AppTheme
+import com.example.webapp.ui.theme.AppTheme
+import java.net.URLEncoder
+import java.util.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,20 +29,31 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Screen(title: String) {
     AndroidView(
-        modifier = Modifier.fillMaxSize(), // Occupy the max size in the Compose UI tree
-        factory = {
+        modifier = Modifier.fillMaxSize(),
+        viewBlock = {
             WebView(it).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 webViewClient = WebViewClient()
+                settings.javaScriptEnabled = true
+                settings.javaScriptCanOpenWindowsAutomatically = true
                 settings.allowContentAccess = true
                 settings.allowFileAccess = true
                 val tag = "my-element"
                 val slot = ""
-                val script = "build/bundle.es.js"
-                loadData("""
+                val bundle = "build/bundle.es.js"
+                var script = ""
+                try {
+                    script = context.assets.open(bundle).bufferedReader().use { it ->
+                        it.readText()
+                    }
+//                    loadUrl(script)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                val htmlString = """
             <!DOCTYPE html>
             <html lang="en">
               <head>
@@ -63,11 +73,13 @@ fun Screen(title: String) {
                 <${tag}>
                     $slot
                 </${tag}>
-                <script src="file://android_asset/${script}"></script>
+                <script>
+                    $script
+                </script>
               </body>
             </html>
-                """.trimIndent(), "text/html", "UTF-8")
-//                loadUrl("https://google.com")
+                """
+                loadData(htmlString, "text/html", "UTF-8")
             }
         },
         update = {

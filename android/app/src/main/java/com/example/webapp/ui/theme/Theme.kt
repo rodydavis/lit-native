@@ -1,4 +1,4 @@
-package com.example.app.ui.theme
+package com.example.webapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -7,15 +7,15 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
 private val DarkColorPalette = darkColors(
-        primary = Purple200,
-        primaryVariant = Purple700,
-        secondary = Teal200
+        primary = purple200,
+        primaryVariant = purple700,
+        secondary = teal200
 )
 
 private val LightColorPalette = lightColors(
-        primary = Purple500,
-        primaryVariant = Purple700,
-        secondary = Teal200
+        primary = purple500,
+        primaryVariant = purple700,
+        secondary = teal200
 
         /* Other default colors to override
     background = Color.White,
@@ -37,8 +37,8 @@ fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() 
 
     MaterialTheme(
             colors = colors,
-            typography = Typography,
-            shapes = Shapes,
+            typography = typography,
+            shapes = shapes,
             content = content
     )
 }
