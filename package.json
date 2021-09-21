@@ -16,7 +16,7 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
-    "lit-element": "^2.4.0",
+    "lit": "*",
     "vite-plugin-pwa": "^0.8.1"
   },
   "devDependencies": {
